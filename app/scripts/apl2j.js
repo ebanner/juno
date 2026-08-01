@@ -3,8 +3,7 @@
 // so the "{" → "{{" and "}" → "}}" rules do not mangle them.
 (function (global) {
   const pairs = [
-    ["{:", "*tail*"],
-    ["}.", "*behead*"],
+    // ["{:", "*tail*"],
     ["⍵", " y "],
     ["⍨", "~"],
     ["⌸", "/."],
@@ -39,7 +38,6 @@
 
   const pairs2 = [
     ["*tail*", "{:"],
-    ["*behead*", "}."],
   ];
 
   function escapeRegExp(s) {
