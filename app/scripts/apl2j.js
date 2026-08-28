@@ -84,6 +84,44 @@
     return out;
   }
 
+  // Type a word then Space to expand it to a glyph (edit this map freely).
+  const wordToGlyph = {
+    omega: "⍵",
+    alpha: "⍺",
+  };
+
+  /**
+   * CodeMirror keymap handler: on Space, replace the word before the
+   * cursor with its glyph (and a trailing space). Returns true if handled.
+   */
+  function expandAplWord(view) {
+    const { state } = view;
+    const sel = state.selection.main;
+    if (!sel.empty) return false;
+
+    const pos = sel.head;
+    const line = state.doc.lineAt(pos);
+    const before = line.text.slice(0, pos - line.from);
+    const match = before.match(/([A-Za-z][A-Za-z0-9_]*)$/);
+    if (!match) return false;
+
+    const word = match[1];
+    const glyph = wordToGlyph[word] ?? wordToGlyph[word.toLowerCase()];
+    if (!glyph) return false;
+
+    const from = pos - word.length;
+    const insert = glyph + " ";
+    view.dispatch({
+      changes: { from, to: pos, insert },
+      selection: { anchor: from + insert.length },
+      userEvent: "input.complete",
+    });
+    console.log("[expandAplWord]", { word, glyph });
+    return true;
+  }
+
   global.aplToJ = aplToJ;
+  global.expandAplWord = expandAplWord;
+  global.aplWordToGlyph = wordToGlyph;
   console.log("[aplToJ] loaded");
 })(typeof globalThis !== "undefined" ? globalThis : window);
